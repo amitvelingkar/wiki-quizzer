@@ -76,6 +76,15 @@ router.get('/categories',
     categoryController.getCategories
 );
 
+router.get('/category/add',
+    authController.isLoggedIn,
+    categoryController.addCategory
+);
+
+router.post('/category/add',
+    catchErrors(categoryController.createCategory)
+);
+
 /*
     API
 */

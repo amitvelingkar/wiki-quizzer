@@ -698,6 +698,20 @@ label {
     content: '\2665\FE0F';
     margin-right: 1rem; } }
 
+.subheader {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  -ms-flex-align: center;
+      align-items: center; }
+  .subheader__section {
+    display: -ms-flexbox;
+    display: flex; }
+    .subheader__section--create {
+      height: auto;
+      padding: 10px; }
+
 .table {
   width: 100%; }
   .table td {

@@ -1,0 +1,7 @@
+mixin categoryForm(category = {})
+    form(action=`/category/add/${category._id || ''}` method="POST" class="card")
+        label(for="name") Name
+        input(type="text" name="name" value=category.name)
+        label(for="wikiUrl") wiki Url
+        input(type="url" name="wikiUrl")
+        input(type="submit" value="Save" class="button")

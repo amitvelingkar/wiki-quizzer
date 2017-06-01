@@ -1,8 +1,22 @@
 extends layout
+include mixins/_categoryForm
 
 block content
     .inner
-        h2 #{title}
-        .categories
-            each category in categories
-                p= category.name
+        .subheader
+            .subheader__section
+                h2 #{title}
+            .subheader__section
+                .button.subheader__section--create
+                    a(href=`/category/add`) Create
+        table.table
+            thead
+                td Name
+                td Wiki Url
+                td Action 1
+                td Action 2
+            .categories
+                each category in categories
+                    tr
+                        td= category.name
+                        td= category.wikiUrl
