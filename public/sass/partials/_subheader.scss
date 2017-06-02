@@ -4,9 +4,10 @@
     align-items: center;
     &__section {
         display: flex;
-        &--create {
+        &--mainAction {
             height: auto;
             padding: 10px;
         }
     }
+
 }

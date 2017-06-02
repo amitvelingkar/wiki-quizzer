@@ -35,10 +35,10 @@ exports.populateTopics = async (req,res) => {
     
     axios.get(category.wikiUrl).then( (response) => {
     let $ = cheerio.load(response.data);
-    let kurs = [];
+    let topics = [];
     $('.wikitable td > b > a').each( (i, elm) => {
         if ($(elm).text().trim().length > 1) {
-            kurs.push( {
+            topics.push( {
             text: $(elm).text(),
             url: $(elm).attr('href'),
             accept: true
@@ -49,7 +49,7 @@ exports.populateTopics = async (req,res) => {
     $('.wikitable tr').each(function(i, row) {
         $(this).find('td > a').eq(0).each( (j, elm) => {
             if ($(elm).text().trim().length > 1) {
-                kurs.push( {
+                topics.push( {
                 text: $(elm).text(),
                 url: $(elm).attr('href'),
                 accept: true
@@ -57,9 +57,9 @@ exports.populateTopics = async (req,res) => {
             }
         });
     });
-    return(kurs);
+    return(topics);
     })
-    .then ( (kurs) => {
-        res.json(kurs);
+    .then ( (topics) => {
+        res.json(topics);
     });
 };

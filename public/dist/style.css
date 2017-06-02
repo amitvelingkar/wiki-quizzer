@@ -708,9 +708,17 @@ label {
   .subheader__section {
     display: -ms-flexbox;
     display: flex; }
-    .subheader__section--create {
+    .subheader__section--mainAction {
       height: auto;
       padding: 10px; }
+
+.actionbar {
+  display: -ms-flexbox;
+  display: flex; }
+  .actionbar__action {
+    margin-right: 10px; }
+  .actionbar button {
+    padding: 10px; }
 
 .table {
   width: 100%; }

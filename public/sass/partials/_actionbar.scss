@@ -1,0 +1,9 @@
+.actionbar {
+    display: flex;
+    &__action {       
+        margin-right: 10px;
+    }
+    button {
+        padding: 10px;
+    }
+}
