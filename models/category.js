@@ -25,6 +25,13 @@ const categorySchema = new mongoose.Schema({
     }
 });
 
+// find topics where topic._id property === topic.category property
+categorySchema.virtual('reviews', {
+    ref: 'Topic', // model to link
+    localField: '_id',
+    foreignField: 'category'
+});
+
 categorySchema.pre('save', async function(next) {
     if (!this.isModified('name')) {
         next();

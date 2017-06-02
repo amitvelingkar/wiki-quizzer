@@ -18,5 +18,5 @@ block content
             .categories
                 each category in categories
                     tr
-                        td= category.name
+                        td: a(href=`/category/${category.slug}`)= category.name
                         td= category.wikiUrl

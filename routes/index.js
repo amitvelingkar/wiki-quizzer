@@ -85,6 +85,10 @@ router.post('/category/add',
     catchErrors(categoryController.createCategory)
 );
 
+router.get('/category/:slug', catchErrors(categoryController.getCategoryBySlug));
+
+router.get('/api/v1/category/:id/populate', catchErrors(categoryController.populateTopics));
+
 /*
     API
 */
@@ -92,5 +96,6 @@ router.post('/category/add',
 router.get('/api/v1/search', catchErrors(storeController.searchStores));
 router.get('/api/v1/stores/near', catchErrors(storeController.mapStores));
 router.post('/api/v1/store/:id/heart', catchErrors(storeController.heartStore));
+
 
 module.exports = router;

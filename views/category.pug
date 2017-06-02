@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    .inner
+        .subheader
+            .subheader__section
+                h2= category.name
+            .subheader__section
+                .button.subheader__section--create
+                    a(href=`/api/v1/category/${category._id}/populate`) Populate Topics
+        #topics
+        
