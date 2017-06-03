@@ -1,24 +1,27 @@
 import axios from 'axios';
 import { $ } from './bling';
-//import templateHandlers from '../../../handlers/templateHandlers';
 
 function populateTopics(topicsForm, topicsDiv) {
     if (!topicsForm) return;
 
     topicsForm.on('submit', function(e) {
         e.preventDefault();
-        const baseUrl = 'https://en.wikipedia.org';
         axios
         .get(this.action)
         .then(res => {
-            const topics = res.data;
+            const topics = res.data.topics;
             const html = topics.map((topic) => {
-                topic.url = topic.url.startsWith("http") ? topic.url : (baseUrl + topic.url);
-                return `<div class="topic">
-                    <div class="topic__body">
-                        <div>${topic.text}</div>
-                        <p>${topic.url}</p>
-                    </div>
+                return `
+                <div class="topic">
+                    <form action="/category/${res.data.categoryId}/topic/add/" method="POST">
+                        <div class="topic__content">
+                            <input type="text" name="name" value="${topic.text}">
+                            <input type="url" class="topic__content--url" name="wikiUrl" value="${topic.url}">
+                        </div>
+                        <div class="topic__action">
+                            <input class="topic__action--add" type="submit" value="Save">
+                        </div>
+                    </form>
                 </div>`;
             }).join('');
             

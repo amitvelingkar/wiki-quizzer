@@ -1048,7 +1048,8 @@ label {
   border-bottom: 1px solid #e6e6e6;
   margin-bottom: 0.5rem;
   position: relative;
-  padding-left: 5px; }
+  padding-right: 2rem;
+  padding-left: 2rem; }
   .topic:before {
     width: 5px;
     left: 0;
@@ -1058,16 +1059,25 @@ label {
     position: absolute;
     height: 100%;
     background-attachment: fixed; }
-  .topic__body {
-    padding-left: 2rem;
+  .topic__content {
     padding-top: 1rem;
-    padding-right: 2rem;
-    padding-bottom: 0.5rem; }
-  .topic p {
-    white-space: pre-wrap;
-    font-size: 1.2rem;
-    color: #999;
-    line-height: 1; }
+    padding-bottom: 0.5rem;
+    width: 90%; }
+    .topic__content input {
+      border: none; }
+    .topic__content--url {
+      font-size: 1.2rem;
+      color: #999;
+      line-height: 1; }
+  .topic__action div {
+    padding: 10px; }
+  .topic form {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: justify;
+        justify-content: space-between;
+    -ms-flex-align: center;
+        align-items: center; }
 
 /*
   Reviewer Form

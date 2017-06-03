@@ -41,7 +41,7 @@ exports.populateTopics = async (req,res) => {
         url: '@href'
     }])(function(err, results) {
         if (!err) {
-            res.json(results);    
+            res.json({categoryId: req.params.id, topics: results});    
         } else {
             console.log(err);
             console.log("xray error");
