@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const axios = require('axios');
-const cheerio = require('cheerio');
 const Category = mongoose.model('Category');
+var Xray = require('x-ray');
 
 exports.getCategories = async (req, res) => {
     // 1. Query the db for list of all stores
@@ -32,34 +31,20 @@ exports.getCategoryBySlug = async (req, res, next) => {
 
 exports.populateTopics = async (req,res) => {
     const category = await Category.findOne({ _id: req.params.id });
-    
-    axios.get(category.wikiUrl).then( (response) => {
-    let $ = cheerio.load(response.data);
-    let topics = [];
-    $('.wikitable td > b > a').each( (i, elm) => {
-        if ($(elm).text().trim().length > 1) {
-            topics.push( {
-            text: $(elm).text(),
-            url: $(elm).attr('href'),
-            accept: true
-            });
+
+    // TDOD - if you remove bold you will get everything
+    // solution is to filter for each row if needed
+    // let us see if we need this.
+    var x = Xray();
+    x(category.wikiUrl, '.wikitable td > b > a', [{
+        text: '',
+        url: '@href'
+    }])(function(err, results) {
+        if (!err) {
+            res.json(results);    
+        } else {
+            console.log(err);
+            console.log("xray error");
         }
-    });
-    
-    $('.wikitable tr').each(function(i, row) {
-        $(this).find('td > a').eq(0).each( (j, elm) => {
-            if ($(elm).text().trim().length > 1) {
-                topics.push( {
-                text: $(elm).text(),
-                url: $(elm).attr('href'),
-                accept: true
-                });
-            }
-        });
-    });
-    return(topics);
-    })
-    .then ( (topics) => {
-        res.json(topics);
     });
 };

@@ -9,14 +9,9 @@ block content
             .subheader__section
                 .button.subheader__section--mainAction
                     a(href=`/category/add`) Create
-        table.table
-            thead
-                td Name
-                td Wiki Url
-                td Action 1
-                td Action 2
-            .categories
-                each category in categories
-                    tr
-                        td: a(href=`/category/${category.slug}`)= category.name
-                        td= category.wikiUrl
+        .categories
+            each category in categories
+                .category
+                    .category__body
+                        a(href=`/category/${category.slug}`)= category.name
+                        p= category.wikiUrl
