@@ -4,8 +4,11 @@
     border-bottom: 1px solid #e6e6e6;
     margin-bottom: 0.5rem;
     position: relative;
-    padding-right: 2rem;
     padding-left: 2rem;
+    padding-right: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     &:before {
         width:5px;
         left: 0;
@@ -16,28 +19,32 @@
         height: 100%;
         background-attachment: fixed;
     }
-    &__content {
+    &__body {
         padding-top: 1rem;
         padding-bottom: 0.5rem;
-        width: 90%;
-        input {
-            border: none;
+    }
+    p {
+        white-space:pre-wrap;
+        font-size: 1.2rem;
+        color: #999;
+        line-height: 1;
+    }
+}
 
-        }
-        &--url {
-            font-size: 1.2rem;
-            color: #999;
-            line-height: 1;
-        }
+.add {
+  &__button {
+    background: none;
+    border: 0;
+    outline: 0;
+    position: relative;
+    svg {
+        width: 40px;
+        fill: #aaa;
     }
-    &__action {
-        div {
-            padding: 10px;
-        }
+    &--added {
+      svg {
+        fill: orange;
+      }
     }
-    form {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+  }
 }

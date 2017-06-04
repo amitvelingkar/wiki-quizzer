@@ -30,21 +30,21 @@ exports.getCategoryBySlug = async (req, res, next) => {
 };
 
 exports.populateTopics = async (req,res) => {
-    const category = await Category.findOne({ _id: req.params.id });
+    const category = await Category.findOne({ slug: req.params.slug });
 
     // TDOD - if you remove bold you will get everything
     // solution is to filter for each row if needed
     // let us see if we need this.
     var x = Xray();
     x(category.wikiUrl, '.wikitable td > b > a', [{
-        text: '',
+        name: '',
         url: '@href'
     }])(function(err, results) {
-        if (!err) {
-            res.json({categoryId: req.params.id, topics: results});    
-        } else {
-            console.log(err);
+        if (err) {
             console.log("xray error");
+            console.log(err);
+            return;
         }
+        res.render('populateTopics', { title: `Populating ${category.name}`, category: category, topics: results } );
     });
 };

@@ -5,6 +5,7 @@ const userController = require('../controllers/UserController');
 const authController = require('../controllers/AuthController');
 const reviewController = require('../controllers/ReviewController');
 const categoryController = require('../controllers/CategoryController');
+const topicController = require('../controllers/TopicController');
 const { catchErrors } = require('../handlers/errorHandlers');
 
 // Do work here
@@ -87,8 +88,7 @@ router.post('/category/add',
 
 router.get('/category/:slug', catchErrors(categoryController.getCategoryBySlug));
 
-router.get('/api/v1/category/:id/populate', catchErrors(categoryController.populateTopics));
-
+router.get('/category/:slug/populate', catchErrors(categoryController.populateTopics));
 /*
     API
 */
@@ -96,6 +96,9 @@ router.get('/api/v1/category/:id/populate', catchErrors(categoryController.popul
 router.get('/api/v1/search', catchErrors(storeController.searchStores));
 router.get('/api/v1/stores/near', catchErrors(storeController.mapStores));
 router.post('/api/v1/store/:id/heart', catchErrors(storeController.heartStore));
+router.post('/api/v1/category/:id/addtopic', catchErrors(topicController.addTopic));
+// TODO - remove
+router.get('/api/v1/category/:id/populate', catchErrors(categoryController.populateTopics));
 
 
 module.exports = router;

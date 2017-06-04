@@ -23,10 +23,14 @@ const categorySchema = new mongoose.Schema({
         validate: [validator.isURL, 'Invalid URL address'],
         required: 'Please supply a wiki URL'
     }
+},
+{
+    toJSON: { virtuals: true },
+    toObject: { vistuals: true }
 });
 
 // find topics where topic._id property === topic.category property
-categorySchema.virtual('reviews', {
+categorySchema.virtual('topics', {
     ref: 'Topic', // model to link
     localField: '_id',
     foreignField: 'category'
@@ -51,5 +55,13 @@ categorySchema.pre('save', async function(next) {
 
     next();
 });
+
+function autoPopulate(next) {
+    this.populate('topics');
+    next();
+}
+
+categorySchema.pre('find', autoPopulate);
+categorySchema.pre('findOne', autoPopulate);
 
 module.exports = mongoose.model('Category', categorySchema);

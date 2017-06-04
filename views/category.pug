@@ -7,7 +7,13 @@ block content
                 h2= category.name
         .actionbar
             .actionbar__action.actionbar__action--populate
-                        form.populateTopics(method="GET" action=`/api/v1/category/${category._id}/populate`)
-                            button.button(type="submit" name="Populate Topics") Populate Topics
-        #topics
+                        form.populateTopics(method="GET" action=`/category/${category.slug}/populate`)
+                            input(type="submit" value="Populate Topics" class="button")
+        if category.topics
+            .topics
+                each topic in category.topics
+                    .topic
+                        .topic__body
+                            a(href=`/category/${category.slug}/topic/${topic.slug}`)= topic.name
+                            p= category.wikiUrl
             
