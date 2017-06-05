@@ -1085,6 +1085,49 @@ label {
   .add__button--added svg {
     fill: orange; }
 
+.clue {
+  background: white;
+  border-bottom: 0;
+  border-bottom: 1px solid #e6e6e6;
+  margin-bottom: 0.5rem;
+  position: relative;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  -ms-flex-align: center;
+      align-items: center; }
+  .clue:before {
+    width: 5px;
+    left: 0;
+    content: '';
+    display: block;
+    background: linear-gradient(0, #48ded4 0%, #a026bf 20%, #e82c75 60%, #FFC40E 85%, #48ded4 95%);
+    position: absolute;
+    height: 100%;
+    background-attachment: fixed; }
+  .clue__body {
+    padding-top: 1rem;
+    padding-bottom: 0.5rem; }
+  .clue p {
+    white-space: pre-wrap;
+    font-size: 1.2rem;
+    color: #999;
+    line-height: 1; }
+
+.add__button {
+  background: none;
+  border: 0;
+  outline: 0;
+  position: relative; }
+  .add__button svg {
+    width: 40px;
+    fill: #aaa; }
+  .add__button--added svg {
+    fill: orange; }
+
 /*
   Reviewer Form
  */

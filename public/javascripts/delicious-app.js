@@ -6,6 +6,7 @@ import autocomplete from './modules/autocomplete';
 import typeAhead from './modules/typeAhead';
 import makeMap from './modules/map';
 import ajaxHeart from './modules/heart';
+import ajaxAddTopic from './modules/addTopic';
 
 autocomplete($('#address'), $('#lat'), $('#lng'));
 typeAhead( $('.search') );
@@ -13,3 +14,6 @@ makeMap( $('#map') );
 
 const heartForms = $$('form.heart');
 heartForms.on('submit', ajaxHeart);
+
+const addTopicForms = $$('form.add__topic');
+addTopicForms.on('submit', ajaxAddTopic);

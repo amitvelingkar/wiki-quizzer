@@ -14,7 +14,7 @@ block content
                             div= topic.name
                             p= topic.url
                         .topic__action.topic__action--add
-                            form.add(method="POST" action=`/api/v1/category/${category._id}/addtopic`)
+                            form.add__topic(method="POST" action=`/api/v1/category/${category._id}/addtopic`)
                                 input(type="hidden" name="name" value=topic.name)
                                 input(type="hidden" name="wikiUrl" value=topic.url)
                                 - const addedClass = wikiStrings.includes(topic.url.trim().toLowerCase()) ? 'add__button--added' : '';

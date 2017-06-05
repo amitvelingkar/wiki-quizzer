@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    .inner
+        .subheader
+            .subheader__section
+                h2= topic.name
+        .actionbar
+            .actionbar__action.actionbar__action--populate
+                        form.populateClues(method="GET" action=`/topic/${topic.slug}/populate`)
+                            input(type="submit" value="Populate Clues" class="button")
+        if topic.clues
+            .clues
+                each clue in topic.clues
+                    .clue
+                        .clue__body
+                            div= clue.text

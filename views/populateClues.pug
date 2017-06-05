@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    .inner
+        .subheader
+            .subheader__section
+                h2 #{title}  
+        if clues
+            .clues
+                each clue in clues
+                    .clue
+                        .clue__body
+                            div= clue.text

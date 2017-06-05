@@ -87,8 +87,10 @@ router.post('/category/add',
 );
 
 router.get('/category/:slug', catchErrors(categoryController.getCategoryBySlug));
+router.get('/topic/:slug', catchErrors(topicController.getTopicBySlug));
 
 router.get('/category/:slug/populate', catchErrors(categoryController.populateTopics));
+router.get('/topic/:slug/populate', catchErrors(topicController.populateClues));
 /*
     API
 */
