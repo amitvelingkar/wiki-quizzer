@@ -82,8 +82,18 @@ router.get('/category/add',
     categoryController.addCategory
 );
 
+router.get('/category/:id/edit',
+    authController.isLoggedIn,
+    categoryController.editCategory
+);
+
+
 router.post('/category/add',
     catchErrors(categoryController.createCategory)
+);
+
+router.post('/category/add/:id',
+    catchErrors(categoryController.updateCategory)
 );
 
 router.get('/category/:slug', catchErrors(categoryController.getCategoryBySlug));

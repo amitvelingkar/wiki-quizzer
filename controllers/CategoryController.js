@@ -18,6 +18,29 @@ exports.createCategory = async (req, res) => {
     res.redirect(`/categories`);
 };
 
+exports.updateCategory = async (req, res) => {
+
+    // 1. find and update the store given the id
+    const category = await Category.findOneAndUpdate({ _id: req.params.id }, req.body, {
+        new: true,
+        runValidators: true
+    }).exec();
+
+    req.flash('success',`Sucessfully updated <Strong>${category.name}</Strong>. <a href="/category/${category.slug}">View Category</a>`);
+    res.redirect(`/category/${category._id}/edit`);
+};
+
+exports.editCategory = async (req, res) => {
+    // 1. find the store given the id
+    const category = await Category.findOne({ _id: req.params.id });
+
+    // 2. confirm they are the owner of the store
+    //confirmOwner(store, req.user);
+
+    // 3. render edit form for users to edit the store
+    res.render('editCategory', { title: `Edit ${category.name}`, category });
+};
+
 exports.getCategoryBySlug = async (req, res, next) => {
     // 1. find the store given the id
     const category = await Category
@@ -36,7 +59,7 @@ exports.populateTopics = async (req,res) => {
     // solution is to filter for each row if needed
     // let us see if we need this.
     var x = Xray();
-    x(category.wikiUrl, '.wikitable td > b > a', [{
+    x(category.wikiUrl, category.selector || '.wikitable td > b > a', [{
         name: '',
         url: '@href'
     }])(function(err, results) {

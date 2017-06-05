@@ -22,6 +22,10 @@ const categorySchema = new mongoose.Schema({
         trim: true,
         validate: [validator.isURL, 'Invalid URL address'],
         required: 'Please supply a wiki URL'
+    },
+    selector : {
+        type: String,
+        trim: true
     }
 },
 {
