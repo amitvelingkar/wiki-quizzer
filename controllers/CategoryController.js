@@ -72,7 +72,7 @@ exports.scrapeTopics = async (req,res, next) => {
 
     
     let results = [];
-    const baseUrl = 'https://en.wikipedia.org/';
+    const baseUrl = 'https://en.wikipedia.org';
     const testLimit = ':lt(4)'; //temporary - test limit
 
     osmosis

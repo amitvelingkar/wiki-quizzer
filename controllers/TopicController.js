@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Topic = mongoose.model('Topic');
-var Xray = require('x-ray');
+const osmosis = require('osmosis');
 
 exports.addTopic = async (req, res) => {
     req.body.topic = req.params.id;
@@ -51,45 +51,52 @@ function scoreClue(topic, clue, index, total) {
     return (positionScore * topicScore * lenScore);
 }
 
-exports.populateClues = async (req,res) => {
+exports.createClues = async (req,res) => {
+    const topic = await Topic.findOne({ slug: req.params.slug });
+    const results = req.body.clues;
+
+    // add score for each clue and choose top 30
+    const clues = results.map((clue, index) => (
+            { text: clue, score: scoreClue(topic.name, clue, index, results.length) }
+        )).sort((a,b) => b.score - a.score);
+
+    // add to map
+    const updatedTopic = await Topic.findByIdAndUpdate(topic._id,
+        { $pushAll: { clues: clues }},
+        { new: true }
+    );
+    res.redirect('back');
+};
+
+exports.populateClues = async (req,res,next) => {
     const topic = await Topic.findOne({ slug: req.params.slug });
 
-    // TDOD - if you remove bold you will get everything
-    // solution is to filter for each row if needed
-    // let us see if we need this.
-    // res.json(topic);
-    
-    var x = Xray({
-        filters: {
-            removeBracket1: function (value) {
-                return typeof value === 'string' ? value.replace(/ *\([^)]*\) */g, ' ') : value
-            },
-            removeBracket2: function (value) {
-                return typeof value === 'string' ? value.replace(/ *\[[^\]]*]/g, ' ') : value
-            }
+    let results = [];
+    const baseUrl = 'https://en.wikipedia.org/';
+    const limit = ':lt(10)'; //increase limit to 10 paragraphs
+
+    osmosis
+    .get(topic.wikiUrl)
+    .find('p'+limit) 
+    .set('text')
+    .data(function(result) {
+        // remove anything in brackets ( and )
+        result.text = result.text.replace(/ *\([^)]*\) */g, ' ');
+        // remove anything in brackets [ and ]
+        result.text = result.text.replace(/ *\[[^\]]*]/g, ' ');
+        // split sentences but be smart about decimal points
+        const clues = result.text
+            .trim()
+            .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
+            .split("|")
+            .filter(clue => clue.length > 12);
+        results = results.concat(clues);
+    }).done( function() {
+        if (!results) {
+            req.flash('error', `Did not find any topics for ${category.name}. Check your url and selector!`);
+            res.redirect(`back`);
         }
-    });
-    x(topic.wikiUrl, 'p', [{
-        text: ' | removeBracket1 | removeBracket2'
-    }]).limit(10)(function(err, results) {
-        if (err) {
-            console.log("xray error");
-            console.log(err);
-            return;
-        }
-        
-        // split paragraphs in senetnces
-        const clueArrays = results.map((clue) => {
-            // return clue.text.trim().split('.');
-            return clue.text.trim().replace(/([.?!])\s*(?=[A-Z])/g, "$1|").split("|");
-        });
-        // flatten array of arrays in a single array, remove any sentence with less than 12 characters
-        let clues = [].concat.apply([], clueArrays).filter(clue => clue.length > 12);
-        clues = clues.map((clue, index) => (
-            { text: clue, score: scoreClue(topic.name, clue, index, clues.length) }
-        )).sort((a,b) => b.score - a.score);
-        
-        //console.log(results);
-        res.render('populateClues', { title: `Populating ${topic.name}`, topic: topic, clues: clues } );
+        req.body.clues = results;
+        next();
     });
 };

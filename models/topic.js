@@ -9,6 +9,9 @@ const clueSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    score: {
+        type: Number
+    },
     visible: {
         type: Boolean,
         default: true
