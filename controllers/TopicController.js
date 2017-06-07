@@ -43,33 +43,45 @@ function scoreClue(topic, clue, index, total) {
     const multiplier = 6;
     const maxLen = 190; 
     const lenScore = Math.sin(Math.PI / (multiplier * (Math.abs(optimalLen - Math.min(maxLen, clue.length)) / optimalLen) + 2));
-    
-    if (index < 10) {
-        console.log(topic,clue,index,total,positionScore,topicScore,lenScore);
-    }
-    
+
     return (positionScore * topicScore * lenScore);
 }
 
 exports.createClues = async (req,res) => {
-    const topic = await Topic.findOne({ slug: req.params.slug });
+    //const topic = await Topic.findOne({ slug: req.params.slug });
     const results = req.body.clues;
+    const topicName = req.body.topic;
 
     // add score for each clue and choose top 30
-    const clues = results.map((clue, index) => (
-            { text: clue, score: scoreClue(topic.name, clue, index, results.length) }
-        )).sort((a,b) => b.score - a.score);
+    const clues = results.map((clue, index) => ({
+        text: clue, 
+        score: scoreClue(topicName, clue, index, results.length),
+        index: index,
+        docLen: results.length,
+        topic: topicName
+    }));
 
-    // add to map
-    const updatedTopic = await Topic.findByIdAndUpdate(topic._id,
-        { $pushAll: { clues: clues }},
+    // add top scoring 30 clues to the topic
+    const topic = await Topic.findByIdAndUpdate(req.params.id,
+        { $push: {
+            clues: { 
+                $each: clues,
+                $sort: { score: -1 },
+                $slice: 30
+            }
+        } }, // will erase previous values
         { new: true }
     );
     res.redirect('back');
 };
 
 exports.populateClues = async (req,res,next) => {
-    const topic = await Topic.findOne({ slug: req.params.slug });
+    // find the topic and remove the old clues
+    const topic = await Topic.findByIdAndUpdate(req.params.id,
+        { clues: [] }
+    ).exec();
+
+    console.log(topic);
 
     let results = [];
     const baseUrl = 'https://en.wikipedia.org/';
@@ -96,6 +108,7 @@ exports.populateClues = async (req,res,next) => {
             req.flash('error', `Did not find any topics for ${category.name}. Check your url and selector!`);
             res.redirect(`back`);
         }
+        req.body.topic = topic.name;
         req.body.clues = results;
         next();
     });

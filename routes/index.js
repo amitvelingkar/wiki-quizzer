@@ -103,7 +103,7 @@ router.get('/category/:slug/populate',
     catchErrors(categoryController.scrapeTopics),
     catchErrors(categoryController.createTopics)
 );
-router.get('/topic/:slug/populate', 
+router.get('/topic/:id/populate', 
     catchErrors(topicController.populateClues),
     catchErrors(topicController.createClues)
 );

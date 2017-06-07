@@ -12,6 +12,16 @@ const clueSchema = new mongoose.Schema({
     score: {
         type: Number
     },
+    index: {
+        type: Number
+    },
+    docLen: {
+        type: Number
+    },
+    topic: {
+        type: String,
+        trim: true
+    },
     visible: {
         type: Boolean,
         default: true
