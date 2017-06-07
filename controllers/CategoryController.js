@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Category = mongoose.model('Category');
-var Xray = require('x-ray');
+const Topic = mongoose.model('Topic');
+const osmosis = require('osmosis');
 
 exports.getCategories = async (req, res) => {
     // 1. Query the db for list of all stores
@@ -52,22 +53,44 @@ exports.getCategoryBySlug = async (req, res, next) => {
     res.render('category', { title: `${category.name}`, category });
 };
 
-exports.populateTopics = async (req,res) => {
+exports.createTopics = async(req,res) => {
+    //res.json(req.body);
+    let topicPromises = [];
+    for (let i=0; i<req.body.topics.length; i++) {
+        const topic = req.body.topics[i];
+        const topicPromise = (new Topic({name: topic.name, wikiUrl: topic.wikiUrl, category: topic.category})).save();
+        topicPromises.push(topicPromise);
+    }
+
+    // wait till all saves are done
+    await Promise.all(topicPromises);
+    res.redirect('back');
+};
+
+exports.scrapeTopics = async (req,res, next) => {
     const category = await Category.findOne({ slug: req.params.slug });
 
-    // TDOD - if you remove bold you will get everything
-    // solution is to filter for each row if needed
-    // let us see if we need this.
-    var x = Xray();
-    x(category.wikiUrl, category.selector || '.wikitable td > b > a', [{
-        name: '',
-        url: '@href'
-    }])(function(err, results) {
-        if (err) {
-            console.log("xray error");
-            console.log(err);
-            return;
+    
+    let results = [];
+    const baseUrl = 'https://en.wikipedia.org/';
+    const testLimit = ':lt(4)'; //temporary - test limit
+
+    osmosis
+    .get(category.wikiUrl)
+    .find((category.selector || '.wikitable td > b > a')+testLimit) 
+    .set('name')
+    .set({
+        wikiUrl: '@href'
+    }).data(function(result) {
+        result.wikiUrl = result.wikiUrl.trim().toLowerCase().startsWith(baseUrl) ? result.wikiUrl : (baseUrl + result.wikiUrl);
+        result.category = category._id;
+        results.push(result);
+    }).done( function() {
+        if (!results) {
+            req.flash('error', `Did not find any topics for ${category.name}. Check your url and selector!`);
+            res.redirect(`back`);
         }
-        res.render('populateTopics', { title: `Populating ${category.name}`, category: category, topics: results } );
+        req.body.topics = results;
+        next();
     });
 };
