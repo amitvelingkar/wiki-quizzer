@@ -39,6 +39,10 @@ const topicSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    updatedClues: {
+        type: Date,
+        default: Date.now
+    },
     category: {
         type: mongoose.Schema.ObjectId,
         ref: 'Category',

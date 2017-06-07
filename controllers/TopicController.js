@@ -78,7 +78,7 @@ exports.createClues = async (req,res) => {
 exports.populateClues = async (req,res,next) => {
     // find the topic and remove the old clues
     const topic = await Topic.findByIdAndUpdate(req.params.id,
-        { clues: [] }
+        { updatedClues: Date.now(), clues: [] }
     ).exec();
 
     console.log(topic);
