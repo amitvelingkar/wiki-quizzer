@@ -9,6 +9,9 @@ block content
             .actionbar__action.actionbar__action--populate
                         form.populateTopics(method="GET" action=`/category/${category.slug}/populate`)
                             input(type="submit" value="Populate Topics" class="button")
+            .actionbar__action.actionbar__action--populateclues
+                        form.populateCluesForTopics(method="GET" action=`/category/${category._id}/populateClues`)
+                            input(type="submit" value="Populate Clues" class="button")
         if category.topics
             .topics
                 each topic in category.topics

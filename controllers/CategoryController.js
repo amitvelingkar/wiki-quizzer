@@ -94,3 +94,107 @@ exports.scrapeTopics = async (req,res, next) => {
         next();
     });
 };
+
+// a quick and directy function to score each clue
+// Points for - 
+// appeaing early in the article
+// contains topic name  
+// length of sentence - medium sized
+// normalized - 0 to 1
+function scoreClue(topic, clue, index, total) {
+    // Position - needs to decay 1, 0.99, 0.95, 0.8, etc.
+    const positionScore = (Math.exp((total-index) / total) / Math.E); 
+
+    // topic name - needs a penalty
+    const topicScore = (clue.toLowerCase().includes(clue.toLowerCase()) ? 1 : 0.25);
+
+    // see length of sentence 0.5, 0.6 .... 1 ... 0.6, 0.5
+    const optimalLen = 80;
+    const multiplier = 6;
+    const maxLen = 190; 
+    const lenScore = Math.sin(Math.PI / (multiplier * (Math.abs(optimalLen - Math.min(maxLen, clue.length)) / optimalLen) + 2));
+
+    return (positionScore * topicScore * lenScore);
+}
+
+function scrapeClues(topic) {
+    // Return a new promise.
+    return new Promise(function(resolve, reject) {
+        const limit = ':lt(10)';
+        let results = [];
+    
+        osmosis
+        .get(topic.wikiUrl)
+        .find('p'+limit) 
+        .set('text')
+        .data(function(result) {
+            // remove anything in brackets ( and )
+            result.text = result.text.replace(/ *\([^)]*\) */g, ' ');
+            // remove anything in brackets [ and ]
+            result.text = result.text.replace(/ *\[[^\]]*]/g, ' ');
+            // split sentences but be smart about decimal points
+            const clues = result.text
+                .trim()
+                .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
+                .split("|")
+                .filter(clue => clue.length > 12);
+            results = results.concat(clues);
+        }).done( function() {
+            if (!results) {
+                console.log(`Did not find any topics for ${topic.name}. Check your url and selector!`);
+            }
+            console.log(results);
+            resolve(results);
+        }).error( function(err) {
+            reject(Error(`Error - Failed to get clues for ${topic.name}`));
+        });
+    });
+}
+
+exports.scrapeCluesForAllTopics = async (req,res) => {
+    const limit = ':lt(10)';
+    const category = await Category.findOne({ _id: req.params.id });
+
+    if (!category.topics) {
+        req.flash('error', `Did not find any topics for ${category.name}. First populate the topics!`);
+        res.redirect(`back`);
+    }
+
+    let cluePromises = [];
+    for (let i=0; i<category.topics.length; i++) {
+        console.log(category.topics[i]);
+        const cluePromise = scrapeClues(category.topics[i]);
+        cluePromises.push(cluePromise);
+    }
+
+    // get the results and save to topics
+    const results = await Promise.all(cluePromises);
+
+    let topicPromises = [];
+    for (let i=0; i<category.topics.length; i++) {
+        // add score for each clue and choose top 30
+        const clues = results[i].map((clue, index) => ({
+            text: clue, 
+            score: scoreClue(category.topics[i].name, clue, index, results[i].length),
+            index: index,
+            docLen: results[i].length,
+            topic: category.topics[i].name
+        }));
+
+        // add top scoring 30 clues to the topic
+        const topicPromise = Topic.findByIdAndUpdate(category.topics[i]._id,
+            { $push: {
+                clues: { 
+                    $each: clues,
+                    $sort: { score: -1 },
+                    $slice: 30
+                }
+            } }, // will erase previous values
+            { new: true }
+        );
+        topicPromises.push(topicPromise);
+    }
+
+    await Promise.all(topicPromises);
+    res.redirect('back');
+};
