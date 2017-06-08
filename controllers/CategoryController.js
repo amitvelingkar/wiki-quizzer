@@ -161,40 +161,30 @@ exports.scrapeCluesForAllTopics = async (req,res) => {
     }
 
     let cluePromises = [];
-    for (let i=0; i<category.topics.length; i++) {
-        console.log(category.topics[i]);
-        const cluePromise = scrapeClues(category.topics[i]);
+    category.topics.forEach((topic) => {
+        const cluePromise = scrapeClues(topic);
         cluePromises.push(cluePromise);
-    }
-
-    // get the results and save to topics
+    });
     const results = await Promise.all(cluePromises);
-
+    
+    // save results to topics
     let topicPromises = [];
-    for (let i=0; i<category.topics.length; i++) {
+    category.topics.forEach((topic, i) => {
         // add score for each clue and choose top 30
         const clues = results[i].map((clue, index) => ({
             text: clue, 
-            score: scoreClue(category.topics[i].name, clue, index, results[i].length),
+            score: scoreClue(topic.name, clue, index, results[i].length),
             index: index,
             docLen: results[i].length,
-            topic: category.topics[i].name
+            topic: topic.name
         }));
 
-        // add top scoring 30 clues to the topic
-        const topicPromise = Topic.findByIdAndUpdate(category.topics[i]._id,
-            { $push: {
-                clues: { 
-                    $each: clues,
-                    $sort: { score: -1 },
-                    $slice: 30
-                }
-            } }, // will erase previous values
-            { new: true }
-        );
+        topic.clues = clues;
+        topic.updatedClues = Date.now();
+        const topicPromise = topic.save();
         topicPromises.push(topicPromise);
-    }
-
+    });
+   
     await Promise.all(topicPromises);
     res.redirect('back');
 };
