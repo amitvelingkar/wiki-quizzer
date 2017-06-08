@@ -93,9 +93,9 @@ exports.populateClues = async (req,res,next) => {
     .set('text')
     .data(function(result) {
         // remove anything in brackets ( and )
-        result.text = result.text.replace(/ *\([^)]*\) */g, ' ');
+        result.text = result.text.replace(/ *\([^)]*\)+ */g, ' ');
         // remove anything in brackets [ and ]
-        result.text = result.text.replace(/ *\[[^\]]*]/g, ' ');
+        result.text = result.text.replace(/ *\[[^\]]*\]+ */g, ' ');
         // split sentences but be smart about decimal points
         const clues = result.text
             .trim()
