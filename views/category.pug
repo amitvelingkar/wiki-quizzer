@@ -13,9 +13,12 @@ block content
                         form.populateCluesForTopics(method="GET" action=`/category/${category._id}/populateClues`)
                             input(type="submit" value="Populate Clues" class="button")
         if category.topics
-            .topics
+            .listitems
                 each topic in category.topics
-                    .topic
-                        .topic__body
+                    .listitem
+                        .listitem__body
                             a(href=`/topic/${topic.slug}`)= topic.name
                             p= topic.wikiUrl
+                        .listitem__actions
+                            .listitem__action.listitem__action--clues
+                                a(href=`/topic/${topic.slug}`)= topic.clues.length

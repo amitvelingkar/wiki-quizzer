@@ -755,17 +755,14 @@ label {
     color: #999;
     line-height: 1; }
   .listitem__action {
-    background: none;
-    border: 0;
-    outline: 0;
-    position: relative; }
+    position: relative;
+    width: 32px;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    background: #eee; }
     .listitem__action svg {
-      width: 32px;
-      fill: #333;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 50%;
-      background: #eee; }
+      fill: #333; }
 
 .add__button {
   background: none;
