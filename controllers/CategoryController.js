@@ -56,8 +56,7 @@ exports.getCategoryBySlug = async (req, res, next) => {
 exports.createTopics = async(req,res) => {
     //res.json(req.body);
     let topicPromises = [];
-    for (let i=0; i<req.body.topics.length; i++) {
-        const topic = req.body.topics[i];
+    for (topic of req.body.topics) {
         const topicPromise = (new Topic({name: topic.name, wikiUrl: topic.wikiUrl, category: topic.category})).save();
         topicPromises.push(topicPromise);
     }
