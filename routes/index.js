@@ -99,14 +99,14 @@ router.post('/category/add/:id',
 router.get('/category/:slug', catchErrors(categoryController.getCategoryBySlug));
 router.get('/topic/:slug', catchErrors(topicController.getTopicBySlug));
 
-router.get('/category/:slug/populate', 
+router.get('/category/:id/populateTopics', 
     catchErrors(categoryController.scrapeTopics),
     catchErrors(categoryController.createTopics)
 );
 router.get('/category/:id/populateClues',
     catchErrors(categoryController.scrapeCluesForAllTopics)
 );
-router.get('/topic/:id/populate', 
+router.get('/topic/:id/populateClues', 
     catchErrors(topicController.populateClues),
     catchErrors(topicController.createClues)
 );
@@ -117,9 +117,8 @@ router.get('/topic/:id/populate',
 router.get('/api/v1/search', catchErrors(storeController.searchStores));
 router.get('/api/v1/stores/near', catchErrors(storeController.mapStores));
 router.post('/api/v1/store/:id/heart', catchErrors(storeController.heartStore));
+// TODO: Remove
 router.post('/api/v1/category/:id/addtopic', catchErrors(topicController.addTopic));
-// TODO - remove
-router.get('/api/v1/category/:id/populate', catchErrors(categoryController.populateTopics));
 
 
 module.exports = router;

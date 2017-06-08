@@ -7,7 +7,7 @@ block content
                 h2= topic.name
         .actionbar
             .actionbar__action.actionbar__action--populate
-                        form.populateClues(method="GET" action=`/topic/${topic._id}/populate`)
+                        form.populateClues(method="GET" action=`/topic/${topic._id}/populateClues`)
                             input(type="submit" value="Populate Clues" class="button")
         if topic.clues
             .clues

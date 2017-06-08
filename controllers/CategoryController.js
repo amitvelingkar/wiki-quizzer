@@ -68,12 +68,12 @@ exports.createTopics = async(req,res) => {
 };
 
 exports.scrapeTopics = async (req,res, next) => {
-    const category = await Category.findOne({ slug: req.params.slug });
+    const category = await Category.findOne({ _id: req.params.id });
 
     
     let results = [];
     const baseUrl = 'https://en.wikipedia.org';
-    const testLimit = ':lt(4)'; //temporary - test limit
+    const testLimit = ':lt(4)'; //TODO - temporary - test limit
 
     osmosis
     .get(category.wikiUrl)
@@ -97,10 +97,10 @@ exports.scrapeTopics = async (req,res, next) => {
 
 // a quick and directy function to score each clue
 // Points for - 
-// appeaing early in the article
-// contains topic name  
-// length of sentence - medium sized
-// normalized - 0 to 1
+// * appeaing early in the article
+// * contains topic name  
+// * length of sentence - medium sized
+// Score range is from 0 to 1
 function scoreClue(topic, clue, index, total) {
     // Position - needs to decay 1, 0.99, 0.95, 0.8, etc.
     const positionScore = (Math.exp((total-index) / total) / Math.E); 

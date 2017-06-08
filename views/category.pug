@@ -7,7 +7,7 @@ block content
                 h2= category.name
         .actionbar
             .actionbar__action.actionbar__action--populate
-                        form.populateTopics(method="GET" action=`/category/${category.slug}/populate`)
+                        form.populateTopics(method="GET" action=`/category/${category._id}/populateTopics`)
                             input(type="submit" value="Populate Topics" class="button")
             .actionbar__action.actionbar__action--populateclues
                         form.populateCluesForTopics(method="GET" action=`/category/${category._id}/populateClues`)
@@ -19,6 +19,7 @@ block content
                         .listitem__body
                             a(href=`/topic/${topic.slug}`)= topic.name
                             p= topic.wikiUrl
+                        - const clueCount = (topic.clues) ? topic.clues.length : 0;
                         .listitem__actions
                             .listitem__action.listitem__action--clues
-                                a(href=`/topic/${topic.slug}`)= topic.clues.length
+                                a(href=`/topic/${topic.slug}`)= clueCount
