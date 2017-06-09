@@ -93,19 +93,19 @@ exports.scrapeTopics = async (req,res, next) => {
 };
 
 exports.scrapeCluesForAllTopics = async (req,res) => {
-    const category = await Category.findOne({ _id: req.params.id });
-    if (!category.topics) {
-        req.flash('error', `Did not find any topics for ${category.name}. First populate the topics!`);
+    const topics = await Topic.find({ category: req.params.id });
+    if (!topics) {
+        req.flash('error', `Did not find any topics. First populate the topics!`);
         res.redirect(`back`);
     }
 
     let cluePromises = [];
-    category.topics.forEach( (topic) => cluePromises.push(scrapeClues(topic)) );
+    topics.forEach( (topic) => cluePromises.push(scrapeClues(topic)) );
     const results = await Promise.all(cluePromises);
     
     // save results to topics
     let topicPromises = [];
-    category.topics.forEach( (topic, i) => topicPromises.push(addCluesToTopic(topic, results[i])) );
+    topics.forEach( (topic, i) => topicPromises.push(addCluesToTopic(topic, results[i])) );
    
     await Promise.all(topicPromises);
     
