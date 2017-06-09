@@ -60,12 +60,4 @@ categorySchema.pre('save', async function(next) {
     next();
 });
 
-function autoPopulate(next) {
-    this.populate('topics');
-    next();
-}
-
-categorySchema.pre('find', autoPopulate);
-categorySchema.pre('findOne', autoPopulate);
-
 module.exports = mongoose.model('Category', categorySchema);

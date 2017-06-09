@@ -17,6 +17,8 @@ block content
                         a(href=`/category/${category.slug}`)= category.name
                         p= category.wikiUrl
                     .listitem__actions
+                        .listitem__action.listitem__action--topics
+                                a(href=`/category/${category.slug}`)= category.topics.length
                         .listitem__action.listitem__action--edit
                             a(href=`/category/${category._id}/edit`)
                                 != h.icon('pencil')

@@ -29,7 +29,12 @@
         color: #999;
         line-height: 1;
     }
+    &__actions {
+        display: flex;
+    }
     &__action {
+        display: flex;
+        margin-left: 0.5rem;
         position: relative;
         width: 32px;
         padding: 6px;
@@ -38,6 +43,12 @@
         background: #eee;
         svg {
             fill: #333;
+        }
+        a {
+            width: 32px;
+            margin: auto;
+            text-align: center;
+            font-size: 12px;
         }
     }
 }

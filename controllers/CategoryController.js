@@ -5,7 +5,7 @@ const {scrapeTopics, scrapeClues, addCluesToTopic} = require('../handlers/wikisc
 
 exports.getCategories = async (req, res) => {
     // 1. Query the db for list of all stores
-    const categories = await Category.find().sort({ name: 'desc' });
+    const categories = await Category.find({}, {name:1, slug:1, wikiUrl: 1}).populate('topics', { _id:1 }).sort({ name: 'desc' });
     res.render('categories', { title: 'Categories', categories });
 };
 

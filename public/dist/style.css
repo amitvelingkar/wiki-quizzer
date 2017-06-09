@@ -754,7 +754,13 @@ label {
     font-size: 1.2rem;
     color: #999;
     line-height: 1; }
+  .listitem__actions {
+    display: -ms-flexbox;
+    display: flex; }
   .listitem__action {
+    display: -ms-flexbox;
+    display: flex;
+    margin-left: 0.5rem;
     position: relative;
     width: 32px;
     padding: 6px;
@@ -763,6 +769,11 @@ label {
     background: #eee; }
     .listitem__action svg {
       fill: #333; }
+    .listitem__action a {
+      width: 32px;
+      margin: auto;
+      text-align: center;
+      font-size: 12px; }
 
 .add__button {
   background: none;
