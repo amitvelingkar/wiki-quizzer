@@ -57,13 +57,18 @@ exports.createTopics = async(req,res) => {
     //res.json(req.body);
     let topicPromises = [];
     for (topic of req.body.topics) {
-        const topicPromise = (new Topic({name: topic.name, wikiUrl: topic.wikiUrl, category: topic.category})).save();
-        topicPromises.push(topicPromise);
+        const existingTopic = await Topic.findOne({ wikiUrl: topic.wikiUrl });
+        // only add if topic does not exist
+        // TODO - do we need to update some properties?
+        if (!existingTopic) {
+            const topicPromise = (new Topic({name: topic.name, wikiUrl: topic.wikiUrl, category: topic.category})).save();
+            topicPromises.push(topicPromise);
+        }
     }
 
     // wait till all saves are done
     await Promise.all(topicPromises);
-    req.flash('success', 'Added Topics!');
+    req.flash('success', `${req.body.topics.length} Topics were found. ${topicPromises.length} were unique and added!`);
     res.redirect('back');
 };
 

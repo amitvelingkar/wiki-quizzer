@@ -19,7 +19,7 @@ exports.scrapeTopics = (category) => {
     return new Promise(function(resolve, reject) {
         let results = [];
         const baseUrl = 'https://en.wikipedia.org';
-        const testLimit = ':lt(4)'; //TODO - temporary - test limit
+        const testLimit = ''; //:lt(4)'; //TODO - temporary - test limit
 
         osmosis
         .get(category.wikiUrl)
@@ -28,7 +28,8 @@ exports.scrapeTopics = (category) => {
         .set({
             wikiUrl: '@href'
         }).data(function(result) {
-            result.wikiUrl = result.wikiUrl.trim().toLowerCase().startsWith(baseUrl) ? result.wikiUrl : (baseUrl + result.wikiUrl);
+            const wikiUrl = result.wikiUrl.trim().toLowerCase();
+            result.wikiUrl = wikiUrl.startsWith(baseUrl) ? wikiUrl : (baseUrl + wikiUrl);
             result.category = category._id;
             results.push(result);
         }).done( function() {
@@ -69,7 +70,6 @@ exports.scrapeClues = (topic) => {
             if (!results) {
                 console.log(`Did not find any topics for ${topic.name}. Check your url and selector!`);
             }
-            console.log(results);
             resolve(results);
         }).error( function(err) {
             reject(Error(`Error - Failed to get clues for ${topic.name}`));
