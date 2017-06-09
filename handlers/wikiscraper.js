@@ -53,16 +53,17 @@ exports.scrapeClues = (topic) => {
         .find('p'+limit) 
         .set('text')
         .data(function(result) {
-            // remove anything in brackets ( and )
-            result.text = result.text.replace(/ *\([^)]*\)+ */g, ' ');
-            // remove anything in brackets [ and ]
-            result.text = result.text.replace(/ *\[[^\]]*\]+ */g, ' ');
+            // remove anything in brackets (), [] and remove extra white spaces
+            result.text = result.text.replace(/ *\([^)]*\)+ */g, ' ')
+                .replace(/ *\[[^\]]*\]+ */g, ' ')
+                .replace(/\s\s+/g, ' ');
+            
             // split sentences but be smart about decimal points
             const clues = result.text
                 .trim()
                 .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
                 .split("|")
-                .filter(clue => clue.length > 12);
+                .filter(clue => clue.length > 12 && (clue.replace(/[^0-9]/g,"").length / clue.length) < 0.2 );
             results = results.concat(clues);
         }).done( function() {
             if (!results) {
