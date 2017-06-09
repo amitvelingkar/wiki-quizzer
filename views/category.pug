@@ -4,7 +4,7 @@ block content
     .inner
         .subheader
             .subheader__section
-                h2= category.name
+                h2 #{title}
         .actionbar
             .actionbar__action.actionbar__action--populate
                         form.populateTopics(method="GET" action=`/category/${category._id}/populateTopics`)
@@ -12,14 +12,13 @@ block content
             .actionbar__action.actionbar__action--populateclues
                         form.populateCluesForTopics(method="GET" action=`/category/${category._id}/populateClues`)
                             input(type="submit" value="Populate Clues" class="button")
-        if category.topics
+        if topics
             .listitems
-                each topic in category.topics
+                each topic in topics
                     .listitem
                         .listitem__body
                             a(href=`/topic/${topic.slug}`)= topic.name
                             p= topic.wikiUrl
-                        - const clueCount = (topic.clues) ? topic.clues.length : 0;
                         .listitem__actions
                             .listitem__action.listitem__action--clues
-                                a(href=`/topic/${topic.slug}`)= clueCount
+                                a(href=`/topic/${topic.slug}`)= topic.clueCount

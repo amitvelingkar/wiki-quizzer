@@ -44,13 +44,27 @@ exports.editCategory = async (req, res) => {
 
 exports.getCategoryBySlug = async (req, res, next) => {
     // 1. find the store given the id
-    const category = await Category
-    .findOne({ slug: req.params.slug })
-    .populate('topics');
+    const category = await Category.findOne({ slug: req.params.slug });
     if (!category) return next();
 
+    const topics = await Topic.aggregate(
+        [{
+            $match: {
+                category: category._id
+            }
+        },
+        {
+            $project: { 
+                name: 1,
+                wikiUrl: 1,
+                slug: 1,
+                clueCount: { $size: "$clues" }
+            }
+        }]
+    );
+
     // 2. render the page to view the category
-    res.render('category', { title: `${category.name}`, category });
+    res.render('category', { title: `${category.name}`, category, topics });
 };
 
 exports.createTopics = async(req,res) => {
