@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Category = mongoose.model('Category');
 const Topic = mongoose.model('Topic');
 const osmosis = require('osmosis');
+const {scrapeClues, addCluesToTopic} = require('../handlers/clueHandlers');
 
 exports.getCategories = async (req, res) => {
     // 1. Query the db for list of all stores
@@ -94,64 +95,7 @@ exports.scrapeTopics = async (req,res, next) => {
     });
 };
 
-// a quick and directy function to score each clue
-// Points for - 
-// * appeaing early in the article
-// * contains topic name  
-// * length of sentence - medium sized
-// Score range is from 0 to 1
-function scoreClue(topic, clue, index, total) {
-    // Position - needs to decay 1, 0.99, 0.95, 0.8, etc.
-    const positionScore = (Math.exp((total-index) / total) / Math.E); 
-
-    // topic name - needs a penalty
-    const topicScore = (clue.toLowerCase().includes(clue.toLowerCase()) ? 1 : 0.25);
-
-    // see length of sentence 0.5, 0.6 .... 1 ... 0.6, 0.5
-    const optimalLen = 80;
-    const multiplier = 6;
-    const maxLen = 190; 
-    const lenScore = Math.sin(Math.PI / (multiplier * (Math.abs(optimalLen - Math.min(maxLen, clue.length)) / optimalLen) + 2));
-
-    return (positionScore * topicScore * lenScore);
-}
-
-function scrapeClues(topic) {
-    // Return a new promise.
-    return new Promise(function(resolve, reject) {
-        const limit = ':lt(10)';
-        let results = [];
-    
-        osmosis
-        .get(topic.wikiUrl)
-        .find('p'+limit) 
-        .set('text')
-        .data(function(result) {
-            // remove anything in brackets ( and )
-            result.text = result.text.replace(/ *\([^)]*\)+ */g, ' ');
-            // remove anything in brackets [ and ]
-            result.text = result.text.replace(/ *\[[^\]]*\]+ */g, ' ');
-            // split sentences but be smart about decimal points
-            const clues = result.text
-                .trim()
-                .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
-                .split("|")
-                .filter(clue => clue.length > 12);
-            results = results.concat(clues);
-        }).done( function() {
-            if (!results) {
-                console.log(`Did not find any topics for ${topic.name}. Check your url and selector!`);
-            }
-            console.log(results);
-            resolve(results);
-        }).error( function(err) {
-            reject(Error(`Error - Failed to get clues for ${topic.name}`));
-        });
-    });
-}
-
 exports.scrapeCluesForAllTopics = async (req,res) => {
-    const limit = ':lt(10)';
     const category = await Category.findOne({ _id: req.params.id });
 
     if (!category.topics) {
@@ -160,30 +104,14 @@ exports.scrapeCluesForAllTopics = async (req,res) => {
     }
 
     let cluePromises = [];
-    category.topics.forEach((topic) => {
-        const cluePromise = scrapeClues(topic);
-        cluePromises.push(cluePromise);
-    });
+    category.topics.forEach( (topic) => cluePromises.push(scrapeClues(topic)) );
     const results = await Promise.all(cluePromises);
     
     // save results to topics
     let topicPromises = [];
-    category.topics.forEach((topic, i) => {
-        // add score for each clue and choose top 30
-        const clues = results[i].map((clue, index) => ({
-            text: clue, 
-            score: scoreClue(topic.name, clue, index, results[i].length),
-            index: index,
-            docLen: results[i].length,
-            topic: topic.name
-        }));
-
-        topic.clues = clues;
-        topic.updatedClues = Date.now();
-        const topicPromise = topic.save();
-        topicPromises.push(topicPromise);
-    });
+    category.topics.forEach( (topic, i) => topicPromises.push(addCluesToTopic(topic, results[i])) );
    
     await Promise.all(topicPromises);
+    // TODO - flash success
     res.redirect('back');
 };

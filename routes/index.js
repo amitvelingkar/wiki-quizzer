@@ -103,13 +103,8 @@ router.get('/category/:id/populateTopics',
     catchErrors(categoryController.scrapeTopics),
     catchErrors(categoryController.createTopics)
 );
-router.get('/category/:id/populateClues',
-    catchErrors(categoryController.scrapeCluesForAllTopics)
-);
-router.get('/topic/:id/populateClues', 
-    catchErrors(topicController.populateClues),
-    catchErrors(topicController.createClues)
-);
+router.get('/category/:id/populateClues', catchErrors(categoryController.scrapeCluesForAllTopics));
+router.get('/topic/:id/populateClues', catchErrors(topicController.populateClues));
 /*
     API
 */
