@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const Category = mongoose.model('Category');
 const Topic = mongoose.model('Topic');
-const osmosis = require('osmosis');
-const {scrapeClues, addCluesToTopic} = require('../handlers/clueHandlers');
+const {scrapeTopics, scrapeClues, addCluesToTopic} = require('../handlers/wikiscraper');
 
 exports.getCategories = async (req, res) => {
     // 1. Query the db for list of all stores
@@ -64,40 +63,18 @@ exports.createTopics = async(req,res) => {
 
     // wait till all saves are done
     await Promise.all(topicPromises);
+    req.flash('success', 'Added Topics!');
     res.redirect('back');
 };
 
 exports.scrapeTopics = async (req,res, next) => {
     const category = await Category.findOne({ _id: req.params.id });
-
-    
-    let results = [];
-    const baseUrl = 'https://en.wikipedia.org';
-    const testLimit = ':lt(4)'; //TODO - temporary - test limit
-
-    osmosis
-    .get(category.wikiUrl)
-    .find((category.selector || '.wikitable td > b > a')+testLimit) 
-    .set('name')
-    .set({
-        wikiUrl: '@href'
-    }).data(function(result) {
-        result.wikiUrl = result.wikiUrl.trim().toLowerCase().startsWith(baseUrl) ? result.wikiUrl : (baseUrl + result.wikiUrl);
-        result.category = category._id;
-        results.push(result);
-    }).done( function() {
-        if (!results) {
-            req.flash('error', `Did not find any topics for ${category.name}. Check your url and selector!`);
-            res.redirect(`back`);
-        }
-        req.body.topics = results;
-        next();
-    });
+    req.body.topics = await scrapeTopics(category);
+    next();
 };
 
 exports.scrapeCluesForAllTopics = async (req,res) => {
     const category = await Category.findOne({ _id: req.params.id });
-
     if (!category.topics) {
         req.flash('error', `Did not find any topics for ${category.name}. First populate the topics!`);
         res.redirect(`back`);
@@ -112,6 +89,7 @@ exports.scrapeCluesForAllTopics = async (req,res) => {
     category.topics.forEach( (topic, i) => topicPromises.push(addCluesToTopic(topic, results[i])) );
    
     await Promise.all(topicPromises);
-    // TODO - flash success
+    
+    req.flash('success', 'Added Clues!');
     res.redirect('back');
 };

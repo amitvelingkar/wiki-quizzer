@@ -14,6 +14,34 @@ const scoreClue = (topic, clue, index, total) => {
     return (positionScore * topicScore * lenScore);
 };
 
+exports.scrapeTopics = (category) => {
+    // Return a new promise.
+    return new Promise(function(resolve, reject) {
+        let results = [];
+        const baseUrl = 'https://en.wikipedia.org';
+        const testLimit = ':lt(4)'; //TODO - temporary - test limit
+
+        osmosis
+        .get(category.wikiUrl)
+        .find((category.selector || '.wikitable td > b > a')+testLimit) 
+        .set('name')
+        .set({
+            wikiUrl: '@href'
+        }).data(function(result) {
+            result.wikiUrl = result.wikiUrl.trim().toLowerCase().startsWith(baseUrl) ? result.wikiUrl : (baseUrl + result.wikiUrl);
+            result.category = category._id;
+            results.push(result);
+        }).done( function() {
+            if (!results) {
+                console.log(`Did not find any topics for ${category.name}. Check your url and selector!`);
+            }
+            resolve(results);
+        }).error( function(err) {
+            reject(Error(`Error - Failed to get clues for ${category.name}`));
+        });
+    });
+};
+
 exports.scrapeClues = (topic) => {
     // Return a new promise.
     return new Promise(function(resolve, reject) {
@@ -56,7 +84,7 @@ exports.addCluesToTopic = (topic, clues) => {
         index: index,
         docLen: clues.length,
         topic: topic.name
-    }));
+    })).sort((a,b) => b.score - a.score).slice(0,30);
 
     // TODO - Sort by score and limit to top 30
 

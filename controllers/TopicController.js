@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Topic = mongoose.model('Topic');
-const {scrapeClues, addCluesToTopic} = require('../handlers/clueHandlers');
+const {scrapeClues, addCluesToTopic} = require('../handlers/wikiscraper');
 
 exports.addTopic = async (req, res) => {
     req.body.topic = req.params.id;
@@ -9,11 +9,8 @@ exports.addTopic = async (req, res) => {
     const newTopic = new Topic(req.body);
     const topic = await newTopic.save();
 
-    res.json(topic);
-    /*
-    req.flash('sucess', 'Topic Saved');
+    req.flash('success', 'Topic Saved');
     res.redirect('back');
-    */
 };
 
 exports.getTopicBySlug = async (req, res, next) => {
@@ -30,6 +27,7 @@ exports.populateClues = async (req,res) => {
     const results = await scrapeClues(topic);
     
     await addCluesToTopic(topic, results);
-    // TODO - flash success
+    
+    req.flash('success', 'Added Clues!');
     res.redirect('back');
 };
