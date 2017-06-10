@@ -51,7 +51,6 @@ const topicSchema = new mongoose.Schema({
     wikiUrl: {
         type: String,
         unique: true,
-        lowercase: true,
         trim: true,
         validate: [validator.isURL, 'Invalid URL address'],
         required: 'Please supply a wiki URL'

@@ -28,7 +28,7 @@ exports.scrapeTopics = (category) => {
         .set({
             wikiUrl: '@href'
         }).data(function(result) {
-            const wikiUrl = result.wikiUrl.trim().toLowerCase();
+            const wikiUrl = result.wikiUrl.trim();
             result.wikiUrl = wikiUrl.startsWith(baseUrl) ? wikiUrl : (baseUrl + wikiUrl);
             result.category = category._id;
             results.push(result);
