@@ -13,10 +13,10 @@ exports.addTopic = async (req, res) => {
     res.redirect('back');
 };
 
-exports.getTopicBySlug = async (req, res, next) => {
+exports.getTopicBySlug = async (req, res) => {
     // 1. find the store given the id
     const topic = await Topic.findOne({ slug: req.params.slug });
-    if (!topic) return next();
+    if (!topic) return;
 
     // 2. render the page to view the topic
     res.render('topic', { title: `${topic.name}`, topic });

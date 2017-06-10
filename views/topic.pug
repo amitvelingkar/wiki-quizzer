@@ -3,6 +3,9 @@ extends layout
 block content
     .inner
         .subheader
+            .subheader__section.subheader__section--back
+                a(href=`/category/id/${topic.category}`)
+                    != h.icon('arrow_back')
             .subheader__section
                 h2= topic.name
         .actionbar

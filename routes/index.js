@@ -96,7 +96,15 @@ router.post('/category/add/:id',
     catchErrors(categoryController.updateCategory)
 );
 
-router.get('/category/:slug', catchErrors(categoryController.getCategoryBySlug));
+router.get('/category/id/:id',
+    catchErrors(categoryController.getCategoryByID),
+    catchErrors(categoryController.getCategoryTopics)
+);
+
+router.get('/category/:slug',
+    catchErrors(categoryController.getCategoryBySlug),
+    catchErrors(categoryController.getCategoryTopics)
+);
 router.get('/topic/:slug', catchErrors(topicController.getTopicBySlug));
 
 router.get('/category/:id/populateTopics', 

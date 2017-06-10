@@ -45,8 +45,24 @@ exports.editCategory = async (req, res) => {
 exports.getCategoryBySlug = async (req, res, next) => {
     // 1. find the store given the id
     const category = await Category.findOne({ slug: req.params.slug });
-    if (!category) return next();
+    if (!category) return;
 
+    req.body.category = category;
+    next();
+}
+
+exports.getCategoryByID = async (req, res, next) => {
+    // 1. find the store given the id
+    const category = await Category.findOne({ _id: req.params.id });
+    if (!category) return;
+
+    req.body.category = category;
+    next();
+}
+
+exports.getCategoryTopics = async (req, res, next) => {
+    // 1. find all the topics that match the category id
+    const category = req.body.category;
     const topics = await Topic.aggregate(
         [{
             $match: {

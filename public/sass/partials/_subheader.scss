@@ -1,12 +1,21 @@
 .subheader {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     &__section {
         display: flex;
         &--mainAction {
             height: auto;
             padding: 10px;
+        }
+        &--back {
+            margin-right: 0.5em;
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            background: #fff;
+            svg {
+                fill: #333;
+            }
         }
     }
 

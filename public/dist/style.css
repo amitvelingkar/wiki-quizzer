@@ -701,8 +701,6 @@ label {
 .subheader {
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-pack: justify;
-      justify-content: space-between;
   -ms-flex-align: center;
       align-items: center; }
   .subheader__section {
@@ -711,6 +709,14 @@ label {
     .subheader__section--mainAction {
       height: auto;
       padding: 10px; }
+    .subheader__section--back {
+      margin-right: 0.5em;
+      position: relative;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      background: #fff; }
+      .subheader__section--back svg {
+        fill: #333; }
 
 .actionbar {
   display: -ms-flexbox;
