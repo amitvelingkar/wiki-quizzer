@@ -46,7 +46,7 @@ exports.scrapeTopics = (category) => {
 exports.scrapeClues = (topic) => {
     // Return a new promise.
     return new Promise(function(resolve, reject) {
-        const limit = ':lt(10)';
+        const limit = ':lt(15)';
         let results = [];
     
         osmosis
@@ -64,7 +64,7 @@ exports.scrapeClues = (topic) => {
                 .trim()
                 .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
                 .split("|")
-                .filter(clue => clue.length > 12 && (clue.replace(/[^0-9]/g,"").length / clue.length) < 0.2 );
+                .filter(clue => clue.length > 20 && (clue.replace(/[^0-9]/g,"").length / clue.length) < 0.2 );
             results = results.concat(clues);
         }).done( function() {
             if (!results) {
