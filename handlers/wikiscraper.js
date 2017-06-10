@@ -62,7 +62,9 @@ exports.scrapeClues = (topic) => {
             // split sentences but be smart about decimal points
             const clues = result.text
                 .trim()
-                .replace(/([.?!])\s*(?=[A-Z])/g, "$1|")
+                .replace(/([A-Z]|Dr|Mr|Ms|Mrs)\./g, "$1###") // keep abbreviations
+                .replace(/([.?!])\s*(?=[A-Z])/g, "$1|") // get sentences
+                .replace(/###/g, ".") // add back abbreviations
                 .split("|")
                 .filter(clue => clue.length > 20 && (clue.replace(/[^0-9]/g,"").length / clue.length) < 0.2 );
             results = results.concat(clues);
